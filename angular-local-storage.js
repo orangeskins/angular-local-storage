@@ -80,6 +80,12 @@ angularLocalStorage.provider('localStorageService', function() {
       prefix = !!prefix ? prefix + '.' : '';
     }
 
+    var setPrefix = function(storagePrefix) {
+        if (storagePrefix !== undefined && storagePrefix.substr(-1) !== '.') {
+            prefix = !!storagePrefix ? storagePrefix + '.' : '';
+        }
+    }
+
     // Checks the browser to see if local storage is supported
     var browserSupportsLocalStorage = (function () {
       try {
@@ -215,10 +221,10 @@ angularLocalStorage.provider('localStorageService', function() {
     // Should be used mostly for development purposes
     var clearAllFromLocalStorage = function (regularExpression) {
 
-      regularExpression = regularExpression || "";
+      var regularExpression = regularExpression || "";
       //accounting for the '.' in the prefix when creating a regex
-      var tempPrefix = prefix.slice(0, -1);
-      var testRegex = new RegExp(tempPrefix + '.' + regularExpression);
+      var tempPrefix = prefix.slice(0, -1) + "\.";
+      var testRegex = RegExp(tempPrefix + regularExpression);
 
       if (!browserSupportsLocalStorage) {
         $rootScope.$broadcast('LocalStorageModule.notification.warning', 'LOCAL_STORAGE_NOT_SUPPORTED');
@@ -343,6 +349,7 @@ angularLocalStorage.provider('localStorageService', function() {
     return {
       isSupported: browserSupportsLocalStorage,
       getStorageType: getStorageType,
+      setPrefix: setPrefix,
       set: addToLocalStorage,
       add: addToLocalStorage, //DEPRECATED
       get: getFromLocalStorage,
@@ -357,7 +364,7 @@ angularLocalStorage.provider('localStorageService', function() {
         clearAll: clearAllFromCookies
       }
     };
-  }];
+  }]
 });
 }).call(this);
 
